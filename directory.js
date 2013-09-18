@@ -98,8 +98,6 @@ if (Meteor.isClient) {
     'submit form': function () {
       var form = _.extend({ phones: [] }, $('#edit form').serializeObject());
 
-      console.log(form);
-
       var m = Session.get('selected_member');
       var callback = function (error) {
         if (!error) {
