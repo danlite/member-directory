@@ -11,10 +11,39 @@ var sessionSelectedMemberID = function () {
   return member && member._id;
 };
 
+var iconNameForPhoneType = function (type) {
+  switch (type) {
+      case 'home':
+        return 'home';
+      case 'work':
+        return 'building';
+      case 'cell':
+        return 'mobile-phone';
+    }
+};
+
+var defaultPhone = function () {
+  return { type: 'home', uuid: Random.id() };
+}
+
 if (Meteor.isClient) {
 
   Handlebars.registerHelper('stringIfExists', function (value) {
     return value ? value : '';
+  });
+
+  Handlebars.registerHelper('phoneIcon', function (type) {
+    var i = $('<i>').addClass('icon-li icon-fixed-width'),
+        iconName;
+
+    iconName = iconNameForPhoneType(type);
+
+    if (iconName) {
+      i.addClass('icon-' + iconName);
+      return i.prop('outerHTML');
+    }
+
+    return '';
   });
 
   Meteor.startup(function () {
@@ -46,27 +75,6 @@ if (Meteor.isClient) {
     return this.family_name + ", " + this.given_names;
   };
 
-  Template.member.phoneIcon = function () {
-    var i = $('<i>').addClass('icon-li'),
-        iconName;
-
-    switch (this.type) {
-      case 'home':
-        iconName = 'home'; break;
-      case 'work':
-        iconName = 'building'; break;
-      case 'cell':
-        iconName = 'mobile-phone'; break;
-    }
-
-    if (iconName) {
-      i.addClass('icon-' + iconName);
-      return i.prop('outerHTML');
-    }
-
-    return '';
-  };
-
   Template.member.hidden = function () {
     return this.hidden ? 'member_hidden' : '';
   };
@@ -94,6 +102,11 @@ if (Meteor.isClient) {
     return Session.get('selected_member').hidden ? 'checked' : '';
   };
 
+  Template.edit_member.phone_with_uuid = function () {
+    this.uuid = Random.id();
+    return this;
+  }
+
   Template.edit_member.events({
     'submit form': function () {
       var form = _.extend({ phones: [] }, $('#edit form').serializeObject());
@@ -115,17 +128,37 @@ if (Meteor.isClient) {
     },
 
     'click #add-phone': function () {
-      $('#edit-phones').append(Meteor.render(Template.phone_field()));
+      var newField = Meteor.render(function () {
+        return Template.phone_field(defaultPhone());
+      });
+      $('#edit-phones').append(newField);
 
       return false;
     },
 
     'click .remove.btn': function (event) {
-      $(event.target).closest('.input-append').remove();
+      $(event.target).closest('fieldset.phone').remove();
 
       return false;
     }
   });
+
+  Template.phone_field.events({
+    'click li.phone-type-item': function (event) {
+      var id = this.uuid,
+          item = $(event.target).closest('.phone-type-item'),
+          type = item.data('type');
+
+      $('input#phone-type-' + id).val(type);
+
+      $('#phone-type-button-' + id).html(Meteor.render(Template.phone_type_button_content({ type: type })));
+    }
+  });
+
+  Template.phone_type_button_content.phone_icon_class = function () {
+    var name = iconNameForPhoneType(this.type);
+    return name ? 'icon-' + name : '';
+  };
 }
 
 if (Meteor.isServer) {

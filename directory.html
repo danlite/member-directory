@@ -47,7 +47,7 @@
     <td>
       <ul class="icons-ul">
         {{#each phones}}
-          <li>{{{phoneIcon}}}{{stringIfExists number}}</li>
+          <li>{{{phoneIcon type}}}{{stringIfExists number}}</li>
         {{/each}}
       </ul>
     </td>
@@ -89,7 +89,7 @@
         <label class="inline">Phone <a id="add-phone" class="btn-success btn btn-mini"><i class="icon-plus icon-white"></i></a></label>
         <div id="edit-phones">
           {{#each selected_member.phones}}
-          {{> phone_field}}
+          {{> phone_field phone_with_uuid}}
           {{/each}}
         </div>
         <label>Email
@@ -110,9 +110,26 @@
 </template>
 
 <template name="phone_field">
-  <div class="input-append input-block-level">
-    <input type="hidden" name="phones[][type]" value="{{stringIfExists type}}" />
-    <input type="text" name="phones[][number]" value="{{stringIfExists number}}" />
-    <a class="remove btn btn-danger"><i class="icon-trash"></i></a>
-  </div>
+  <fieldset class="phone">
+    <input id="phone-type-{{uuid}}" type="hidden" name="phones[][type]" value="{{stringIfExists type}}" />
+    <div class="input-prepend input-append input-block-level">
+      <div class="btn-group">
+        <button id="phone-type-button-{{uuid}}" class="btn dropdown-toggle" data-toggle="dropdown">
+          {{> phone_type_button_content}}
+        </button>
+        <ul class="dropdown-menu">
+          <li class="phone-type-item" data-type="home"><a>{{{phoneIcon 'home'}}} Home</a></li>
+          <li class="phone-type-item" data-type="work"><a>{{{phoneIcon 'work'}}} Work</a></li>
+          <li class="phone-type-item" data-type="cell"><a>{{{phoneIcon 'cell'}}} Cell</a></li>
+        </ul>
+      </div>
+      <input type="text" name="phones[][number]" value="{{stringIfExists number}}" />
+      <a class="remove btn btn-danger"><i class="icon-trash"></i></a>
+    </div>
+  </fieldset>
 </template>
+
+<template name="phone_type_button_content">
+  <i class="icon-fixed-width {{phone_icon_class type}}"></i><span class="caret"></span>
+</template>
+
