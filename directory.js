@@ -76,8 +76,8 @@ if (Meteor.isClient) {
   };
 
   Template.member.events({
-    'click': function () {
-      Session.set('selected_member', this);
+    'click': function (event, template) {
+      Session.set('selected_member', template.data);
       presentEditModal();
     }
   });
