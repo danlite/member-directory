@@ -19,3 +19,7 @@ th.phone {
 th.address {
   width: 35%;
 }
+
+fieldset.phone .btn-group i {
+  text-align: center;
+}
