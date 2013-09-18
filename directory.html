@@ -73,9 +73,9 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3>{{action}} Member</h3>
   </div>
-  <div class="modal-body">
-    {{#if selected_member}}
-    <form action="#">
+  {{#if selected_member}}
+  <form action="#">
+    <div class="modal-body">
       <fieldset>
         <label>Family name
           <input type="text" class="input-block-level" placeholder="Family name" name="family_name" value="{{stringIfExists selected_member.family_name}}" />
@@ -99,14 +99,15 @@
         <label class="checkbox inline">
           <input type="checkbox" name="hidden" {{hidden}} /> Hidden
         </label>
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
       </fieldset>
-    </form>
-    {{/if}}
-  </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+  {{else}}
+  <div class="modal-footer"></div>
+  {{/if}}
 </template>
 
 <template name="phone_field">

@@ -4,6 +4,10 @@
   padding-top: 65px;
 }
 
+#edit form {
+  margin-bottom: 0;
+}
+
 tr.member_hidden {
   color: #aaa;
 }
