@@ -1,0 +1,17 @@
+/* CSS declarations go here */
+
+#content {
+  padding-top: 65px;
+}
+
+tr.member_hidden {
+  color: #aaa;
+}
+
+th.phone {
+  width: 15%;
+}
+
+th.address {
+  width: 35%;
+}

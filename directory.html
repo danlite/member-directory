@@ -1,0 +1,118 @@
+<head>
+  <title>Member Directory</title>
+</head>
+
+<body>
+  {{> nav_bar}}
+
+  <div id="content" class="container">
+    {{> member_list}}
+  </div>
+
+  <div id="edit" class="modal hide fade">
+    {{> edit_member}}
+  </div>
+</body>
+
+<template name="nav_bar">
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a href="#" class="brand">Member Directory</a>
+        <ul class="nav pull-right"><li>
+          <button id="add-member" class="btn btn-success" href="#"><i class="icon-plus"></i> Add Member</button>
+        </li></ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="member_list">
+  <table class="table table-bordered table-striped table-hover">
+    <tr>
+      <th class="name">Name</th>
+      <th class="phone">Phone</th>
+      <th class="address">Address</th>
+      <th class="email">Email</th>
+    </tr>
+    {{#each members}}
+      {{> member}}
+    {{/each}}
+  </table>
+</template>
+
+<template name="member">
+  <tr class="{{hidden}} {{editing}}">
+    <td>{{> full_name}}</td>
+    <td>
+      <ul class="icons-ul">
+        {{#each phones}}
+          <li>{{{phoneIcon}}}{{stringIfExists number}}</li>
+        {{/each}}
+      </ul>
+    </td>
+    <td>{{stringIfExists address}}</td>
+    <td>{{stringIfExists email}}</td>
+  </tr>
+</template>
+
+<template name="full_name">
+  <strong>
+    {{#if family_name}}
+      {{family_name}}</strong>{{#if given_names}}, {{given_names}}{{/if}}
+    {{else}}
+      {{#if given_names}}
+        {{given_names}}
+      {{/if}}
+      </strong>
+    {{/if}}
+</template>
+
+<template name="edit_member">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3>{{action}} Member</h3>
+  </div>
+  <div class="modal-body">
+    {{#if selected_member}}
+    <form action="#">
+      <fieldset>
+        <label>Family name
+          <input type="text" class="input-block-level" placeholder="Family name" name="family_name" value="{{stringIfExists selected_member.family_name}}" />
+        </label>
+        <label>Given names
+          <input type="text" class="input-block-level" placeholder="Given names" name="given_names" value="{{stringIfExists selected_member.given_names}}" />
+        </label>
+        <label>Address
+          <input type="text" class="input-block-level" placeholder="Address" name="address" value="{{stringIfExists selected_member.address}}" />
+        </label>
+        <label class="inline">Phone <a id="add-phone" class="btn-success btn btn-mini"><i class="icon-plus icon-white"></i></a></label>
+        <div id="edit-phones">
+          {{#each selected_member.phones}}
+          {{> phone_field}}
+          {{/each}}
+        </div>
+        <label>Email
+          <input type="text" class="input-block-level" placeholder="Email" name="email" value="{{stringIfExists selected_member.email}}" />
+        </label>
+        
+        <label class="checkbox inline">
+          <input type="checkbox" name="hidden" {{hidden}} /> Hidden
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </fieldset>
+    </form>
+    {{/if}}
+  </div>
+</template>
+
+<template name="phone_field">
+  <div class="input-append input-block-level">
+    <input type="hidden" name="phones[][type]" value="{{stringIfExists type}}" />
+    <input type="text" name="phones[][number]" value="{{stringIfExists number}}" />
+    <a class="remove btn btn-danger"><i class="icon-trash"></i></a>
+  </div>
+</template>
