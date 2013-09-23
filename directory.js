@@ -28,6 +28,29 @@ var defaultPhone = function () {
 
 if (Meteor.isClient) {
 
+  Meteor.startup(function () {
+    Meteor.autorun(function () {
+      $('#stylesheet').attr('href', Session.get('print') ? '/booklet.css' : '/directory.css');
+    });
+
+    if (Session.get('selected_member')) {
+      presentEditModal();
+    }
+  });
+
+  Meteor.Router.add({
+    '/': 'directory',
+    '/print': 'print'
+  });
+
+  Meteor.Router.beforeRouting = function (context) {
+    Session.set('print', (context.path == '/print'));
+  };
+
+  Handlebars.registerHelper('print', function () {
+    return Session.get('print');
+  })
+
   Handlebars.registerHelper('stringIfExists', function (value) {
     return value ? value : '';
   });
@@ -46,22 +69,27 @@ if (Meteor.isClient) {
     return '';
   });
 
-  Meteor.startup(function () {
-    if (Session.get('selected_member')) {
-      presentEditModal();
-    }
-  });
-
   Template.nav_bar.events({
     'click #add-member': function () {
       Session.set('selected_member', {});
       presentEditModal();
+    },
+
+    'click #print-preview': function () {
+      Meteor.Router.to('/print');
+    }
+  });
+
+  Template.print.events({
+    'click #edit-directory': function () {
+      Meteor.Router.to('/');
     }
   });
 
   Template.member_list.members = function (){
     return Members.find({}, { sort: { family_name: 1, given_names: 1 }});
   };
+  Template.member_list_print.members = Template.member_list.members;
 
   Template.member.full_name = function () {
     if (!this.family_name) {
@@ -74,10 +102,12 @@ if (Meteor.isClient) {
 
     return this.family_name + ", " + this.given_names;
   };
+  Template.member_print.full_name = Template.member.full_name;
 
   Template.member.hidden = function () {
-    return this.hidden ? 'member_hidden' : '';
+    return this.hidden ? 'member-hidden' : '';
   };
+  Template.member_print.hidden = Template.member.hidden;
 
   Template.member.editing = function () {
     return sessionSelectedMemberID() == this._id ? 'warning' : '';
