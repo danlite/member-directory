@@ -64,14 +64,6 @@
   </table>
 </template>
 
-<template name="member_list_print">
-  <div id="members">
-    {{#each members}}
-      {{> member_print}}
-    {{/each}}
-  </div>
-</template>
-
 <template name="member">
   <tr class="{{hidden}} {{editing}}">
     <td>{{> full_name}}</td>
@@ -85,6 +77,14 @@
     <td>{{stringIfExists address}}</td>
     <td>{{stringIfExists email}}</td>
   </tr>
+</template>
+
+<template name="member_list_print">
+  <div id="members">
+    {{#each members}}
+      {{> member_print}}
+    {{/each}}
+  </div>
 </template>
 
 <template name="member_print">
