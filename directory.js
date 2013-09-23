@@ -83,6 +83,10 @@ if (Meteor.isClient) {
   Template.print.events({
     'click #edit-directory': function () {
       Meteor.Router.to('/');
+    },
+
+    'click #print-page': function () {
+      window.print();
     }
   });
 
