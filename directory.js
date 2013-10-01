@@ -40,6 +40,7 @@ if (Meteor.isClient) {
 
   Deps.autorun(function () {
     Meteor.subscribe('members', Session.get('print'));
+    Meteor.subscribe('userData');
   });
 
   Meteor.Router.add({
@@ -204,11 +205,27 @@ if (Meteor.isServer) {
   Meteor.startup(function () {
   });
 
+  var adminWithUserID = function(userID) {
+    return Meteor.users.findOne({ _id: userID, admin: true });
+  };
+
   Meteor.publish('members', function (print) {
     var selector = {};
     if (print) {
       selector.hidden = {$ne: true};
     }
-    return Members.find(selector);
+
+    return adminWithUserID(this.userId) ? Members.find(selector) : null;
+  });
+
+  Meteor.publish('userData', function () {
+    return Meteor.users.find({ _id: this.userId },
+                             { fields: { 'admin': 1 } });
+  });
+
+  Members.allow({
+    insert: adminWithUserID,
+    update: adminWithUserID,
+    remove: adminWithUserID
   });
 }

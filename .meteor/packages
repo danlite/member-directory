@@ -9,3 +9,8 @@ accounts-password
 bootstrap
 font-awesome
 random
+standard-app-packages
+accounts-ui-bootstrap-dropdown
+HTML5-History-API
+page-js-ie-support
+router

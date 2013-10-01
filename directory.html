@@ -40,10 +40,13 @@
     <div class="navbar-inner">
       <div class="container">
         <a href="#" class="brand">Member Directory</a>
+        {{loginButtons}}
         <ul class="nav pull-right">
           <li><button id="print-preview" class="btn" href="#"><i class="icon-print"></i> Print Preview</button></li>
+          {{#if Meteor.user.admin}}
           <li class="divider-vertical"></li>
           <li><button id="add-member" class="btn btn-success" href="#"><i class="icon-plus"></i> Add Member</button></li>
+          {{/if}}
         </ul>
       </div>
     </div>

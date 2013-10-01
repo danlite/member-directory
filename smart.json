@@ -1,6 +1,7 @@
 {
   "packages": {
     "font-awesome": {},
-    "router": {}
+    "router": {},
+    "accounts-ui-bootstrap-dropdown": {}
   }
 }
