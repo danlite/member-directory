@@ -38,6 +38,10 @@ if (Meteor.isClient) {
     }
   });
 
+  Deps.autorun(function () {
+    Meteor.subscribe('members', Session.get('print'));
+  });
+
   Meteor.Router.add({
     '/': 'directory',
     '/print': 'print'
@@ -144,6 +148,7 @@ if (Meteor.isClient) {
   Template.edit_member.events({
     'submit form': function () {
       var form = _.extend({ phones: [] }, $('#edit form').serializeObject());
+      form.hidden = form.hidden ? true : false;
 
       var m = Session.get('selected_member');
       var callback = function (error) {
@@ -197,5 +202,13 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
+  });
+
+  Meteor.publish('members', function (print) {
+    var selector = {};
+    if (print) {
+      selector.hidden = {$ne: true};
+    }
+    return Members.find(selector);
   });
 }
