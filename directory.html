@@ -160,9 +160,9 @@
     <input id="phone-type-{{uuid}}" type="hidden" name="phones[][type]" value="{{stringIfExists type}}" />
     <div class="input-prepend input-append input-block-level">
       <div class="btn-group">
-        <button id="phone-type-button-{{uuid}}" class="btn dropdown-toggle" data-toggle="dropdown">
+        <a id="phone-type-button-{{uuid}}" class="btn dropdown-toggle" data-toggle="dropdown">
           {{> phone_type_button_content}}
-        </button>
+        </a>
         <ul class="dropdown-menu">
           <li class="phone-type-item" data-type="home"><a>{{{phoneIcon 'home'}}} Home</a></li>
           <li class="phone-type-item" data-type="work"><a>{{{phoneIcon 'work'}}} Work</a></li>
