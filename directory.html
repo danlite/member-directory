@@ -36,6 +36,13 @@
   </div>
 </template>
 
+<template name="alert">
+  <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <span>{{{message}}}</span>
+  </div>
+</template>
+
 <template name="print">
   <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -164,6 +171,9 @@
       </fieldset>
     </div>
     <div class="modal-footer">
+      {{#if selected_member._id}}
+      <button id="delete-member" type="button" class="btn btn-danger">Delete</button>
+      {{/if}}
       <button type="submit" class="btn btn-primary">Submit</button>
     </div>
   </form>

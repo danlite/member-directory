@@ -26,7 +26,11 @@ var iconNameForPhoneType = function (type) {
 
 var defaultPhone = function () {
   return { type: 'home', uuid: Random.id() };
-}
+};
+
+var adminWithUserID = function (userID) {
+  return Meteor.users.findOne({ _id: userID, admin: true });
+};
 
 if (Meteor.isClient) {
 
@@ -95,13 +99,23 @@ if (Meteor.isClient) {
 
       $('#admin-password').val('');
 
-      Meteor.call('createInitialUser', email, function (err, success) {
-        if (success) {
-          $('#admin-signup').modal('hide');
+      Meteor.call('createInsecureUser', email, true, function (err, success) {
+        if (err) {
+          console.log(err.message);
+          return;
+        }
+
+        $('#admin-signup').modal('hide');
+
+        if (Meteor.user) {
+
+        } else {
           Meteor.loginWithPassword(email, defaultPassword, function (err) {
             Accounts.changePassword(defaultPassword, password);
           });
         }
+
+        $('#content').prepend(Template.alert({ message: 'Admin user <strong>' + email + '</strong> successfully created!'}));
       });
 
       return false;
@@ -214,6 +228,17 @@ if (Meteor.isClient) {
       $(event.target).closest('fieldset.phone').remove();
 
       return false;
+    },
+
+    'click #delete-member': function () {
+      var member = Session.get('selected_member');
+
+      if (!confirm('Are you sure you want to delete ' + Template.member.full_name.call(member) + ' permanently?'))
+        return;
+
+      Members.remove(member._id);
+
+      $('#edit').modal('hide');
     }
   });
 
@@ -239,10 +264,6 @@ if (Meteor.isServer) {
   Meteor.startup(function () {
   });
 
-  var adminWithUserID = function(userID) {
-    return Meteor.users.findOne({ _id: userID, admin: true });
-  };
-
   Meteor.publish('members', function (print) {
     var selector = {};
     if (print) {
@@ -253,7 +274,8 @@ if (Meteor.isServer) {
   });
 
   Meteor.publish('userData', function () {
-    return Meteor.users.find({ _id: this.userId },
+    var selector = adminWithUserID(this.userId) ? {} : { _id: this.userId };
+    return Meteor.users.find(selector,
                              { fields: { 'admin': 1 } });
   });
 
@@ -264,7 +286,7 @@ if (Meteor.isServer) {
   });
 
   Accounts.onCreateUser(function (options, user) {
-    if (Meteor.call('userCount') == 0)
+    if (Meteor.call('userCount') == 0 || options.admin)
       user.admin = true;
 
     if (options.profile)
@@ -283,20 +305,18 @@ Meteor.methods({
     return Meteor.users.find({}).count();
   },
 
-  createInitialUser: function (email) {
-    var userID,
-        success = false;
+  createInsecureUser: function (email, admin) {
+    var userID;
 
-    if (Meteor.call('userCount') > 0)
+    if (Meteor.isClient)
       return;
 
-    if (Meteor.isServer) {
-      userID = Accounts.createUser({ email: email, password: defaultPassword });
-      if (userID) {
-        success = true;
-      }
-    }
+    if (!adminWithUserID(this.userId) && Meteor.call('userCount') > 0)
+      throw Meteor.Error(403, 'Must be an administrator to add new users.');
 
-    return success;
+    userID = Accounts.createUser({ email: email, password: defaultPassword, admin: admin });
+    if (!userID) {
+      throw Meteor.Error(500, 'Unable to create user.');
+    }
   }
 });
