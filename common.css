@@ -2,8 +2,13 @@
   padding-top: 65px;
 }
 
-#edit form {
+#edit form,
+#admin-signup form {
   margin-bottom: 0;
+}
+
+#signup-link {
+  display: none;
 }
 
 tr.member-hidden {

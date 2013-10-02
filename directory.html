@@ -17,6 +17,23 @@
   <div id="edit" class="modal hide fade">
     {{> edit_member}}
   </div>
+
+  <div id="admin-signup" class="modal hide fade">
+    <div class="modal-header">
+      <h3>Create Administrator</h3>
+    </div>
+    <form>
+      <div class="modal-body">
+        <div>
+          <input id="admin-email" type="email" placeholder="email address" />
+          <input id="admin-password" type="password" placeholder="password" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" id="create-admin">Create admin</button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <template name="print">

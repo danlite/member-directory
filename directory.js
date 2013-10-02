@@ -1,5 +1,7 @@
 Members = new Meteor.Collection('members');
 
+var defaultPassword = 'password';
+
 var presentEditModal = function () {
   $('#edit').modal().off('hidden').on('hidden', function () {
     Session.set('selected_member', null);
@@ -36,6 +38,15 @@ if (Meteor.isClient) {
     if (Session.get('selected_member')) {
       presentEditModal();
     }
+
+    Meteor.call('userCount', function (err, count) {
+      if (count == 0) {
+        $('#admin-signup').modal({
+          keyboard: false,
+          backdrop: 'static'
+        });
+      }
+    });
   });
 
   Deps.autorun(function () {
@@ -72,6 +83,29 @@ if (Meteor.isClient) {
     }
 
     return '';
+  });
+
+  Template.directory.events({
+    'submit #admin-signup form': function () {
+      var email = $('#admin-email').val();
+      var password = $('#admin-password').val();
+
+      if (!password.length)
+        return;
+
+      $('#admin-password').val('');
+
+      Meteor.call('createInitialUser', email, function (err, success) {
+        if (success) {
+          $('#admin-signup').modal('hide');
+          Meteor.loginWithPassword(email, defaultPassword, function (err) {
+            Accounts.changePassword(defaultPassword, password);
+          });
+        }
+      });
+
+      return false;
+    }
   });
 
   Template.nav_bar.events({
@@ -228,4 +262,41 @@ if (Meteor.isServer) {
     update: adminWithUserID,
     remove: adminWithUserID
   });
+
+  Accounts.onCreateUser(function (options, user) {
+    if (Meteor.call('userCount') == 0)
+      user.admin = true;
+
+    if (options.profile)
+      user.profile = options.profile;
+
+    return user;
+  });
 }
+
+Accounts.config({
+  forbidClientAccountCreation: true
+});
+
+Meteor.methods({
+  userCount: function () {
+    return Meteor.users.find({}).count();
+  },
+
+  createInitialUser: function (email) {
+    var userID,
+        success = false;
+
+    if (Meteor.call('userCount') > 0)
+      return;
+
+    if (Meteor.isServer) {
+      userID = Accounts.createUser({ email: email, password: defaultPassword });
+      if (userID) {
+        success = true;
+      }
+    }
+
+    return success;
+  }
+});
